@@ -1,0 +1,23 @@
+# Core Data & scRNA-seq Libraries
+scanpy>=1.9.0
+anndata>=0.8.0
+pandas>=1.4.0
+numpy>=1.21.0
+
+# Cell Annotation
+celltypist>=1.3.0
+
+# Bayesian Optimization
+scikit-optimize>=0.9.0
+scikit-learn>=1.0.0
+
+# String Matching / Fuzzy Logic
+rapidfuzz>=3.0.0
+
+# Plotting
+matplotlib>=3.5.0
+
+# Scanpy Implicit Dependencies (Required for specific functions in your script)
+leidenalg>=0.9.0     # Required for leiden clustering (args.cas_aggregation_method == 'leiden')
+harmonypy>=0.0.9     # Required for batch integration (--integration_method harmony)
+umap-learn>=0.5.3    # Required for UMAP generation

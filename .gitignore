@@ -1,0 +1,358 @@
+# =============================================================================
+# .gitignore for scRNA-seq Bayesian Optimization Pipeline
+# =============================================================================
+
+# =============================================================================
+# Python
+# =============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+pdm.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# =============================================================================
+# Pipeline-Specific Output Files and Directories
+# =============================================================================
+
+# Stage 1: Bayesian Optimization outputs
+stage_1_bayesian_optimization/
+*_opt_result.skopt
+*_bayesian_opt_*.txt
+*_bayesian_opt_*.csv
+*_bayesian_opt_*.png
+*_bayesian_opt_*.pdf
+*_FINAL_best_params.txt
+*_FINAL_annotated.h5ad
+
+# Stage 2: Final Analysis outputs
+stage_2_final_analysis/
+*_final_processed*.h5ad
+*_all_annotations*.csv
+*_cluster_annotation_scores*.csv
+*_celltype_matching_diagnostics.csv
+*_cell_type_journey_summary.csv
+
+# Refinement outputs
+refinement_depth_*/
+*_refinement_depth_*.h5ad
+*_refinement_depth_*.csv
+*_refinement_depth_*.png
+*_combined_cluster_annotation_scores.csv
+*_FINAL_refined_*.csv
+*_FINAL_refined_*.png
+*_FINAL_refined_*.txt
+
+# Consistent cells export
+consistent_cells_subset/
+*_consistent_cells_*.csv
+*_consistent_cells_*.png
+
+# Deconvolution reference files
+deconvolution_reference_REFINED/
+sc_counts.csv
+sc_labels.csv
+st_counts.csv
+sc_counts_REFINED.csv
+sc_labels_REFINED.csv
+sc_labels_REFINED_with_comparison.csv
+
+# Cell type marker details
+celltype_marker_details/
+*_celltype_top_markers.csv
+*_celltype_matching_summary.csv
+*_celltype_canonical_overlap.csv
+*_celltype_hvg_genes.csv
+
+# Marker-based annotation outputs
+*_marker_based_annotation*.csv
+*_marker_based_annotation*.png
+
+# UMAP and visualization outputs
+*_umap_*.png
+*_dotplot*.png
+*_heatmap*.png
+*_violin*.png
+*_convergence*.png
+*_tsne*.png
+*_yield_curve*.csv
+figures/
+
+# =============================================================================
+# Single-Cell Analysis Data Files
+# =============================================================================
+
+# AnnData files
+*.h5ad
+
+# 10X Genomics formats
+*.h5
+matrix.mtx
+matrix.mtx.gz
+barcodes.tsv
+barcodes.tsv.gz
+genes.tsv
+genes.tsv.gz
+features.tsv
+features.tsv.gz
+
+# Raw data directories (common naming conventions)
+raw_data/
+data/
+input_data/
+filtered_feature_bc_matrix/
+raw_feature_bc_matrix/
+outs/
+
+# CellTypist models (large files)
+*.pkl
+models/
+
+# Marker databases
+combined_markers_summary.csv
+marker_database*.csv
+
+# =============================================================================
+# Scikit-optimize / Optimization artifacts
+# =============================================================================
+*.skopt
+
+# =============================================================================
+# Large/Binary Files
+# =============================================================================
+# Compressed files
+*.gz
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.bz2
+*.7z
+
+# HDF5 files
+*.hdf5
+
+# Pickle files
+*.pickle
+
+# NumPy files
+*.npy
+*.npz
+
+# =============================================================================
+# IDE and Editor Files
+# =============================================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# OS Generated Files
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# Logs and Temporary Files
+# =============================================================================
+*.log
+*.tmp
+*.temp
+*.bak
+logs/
+tmp/
+temp/
+
+# Slurm/HPC job outputs
+slurm-*.out
+*.out
+*.err
+
+# =============================================================================
+# Documentation and Reports (if auto-generated)
+# =============================================================================
+# Uncomment if you generate reports programmatically
+# reports/
+# *.html
+
+# =============================================================================
+# Test Data (if applicable)
+# =============================================================================
+test_data/
+tests/fixtures/
+sample_data/
+
+# =============================================================================
+# Credentials and Secrets (IMPORTANT - Never commit these!)
+# =============================================================================
+*.pem
+*.key
+credentials.json
+secrets.json
+config.local.json
+.env.local
+.env.*.local
