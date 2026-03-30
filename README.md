@@ -19,12 +19,14 @@
 ---
 
 ## Repository Structure
+```text
 ARCADE/
-├── .gitignore               # Specifies files for Git to ignore
-├── LICENSE                  # Project license (e.g., MIT)
-├── README.md                # This documentation file
-├── requirements.txt         # Exact Python dependencies for reproducibility
-└── 01a_ARCADE_ref_optimizer.py                 # The main executable Python script
+├── .gitignore                      # Specifies files for Git to ignore
+├── LICENSE                         # Project license (e.g., MIT)
+├── README.md                       # This documentation file
+├── requirements.txt                # Exact Python dependencies for reproducibility
+└── 01a_ARCADE_ref_optimizer.py     # The main executable Python script
+```
 
 ---
 
@@ -395,7 +397,7 @@ Common abbreviations are automatically expanded:
 | `OPC` | `oligodendrocyte precursor cell` |
 | `Astro` | `astrocyte` |
 | `L5-6 Exc` | `layer 5-6 excitatory neuron` |
-| And many more... | |
+| ... | |
 ---
 
 ## License
