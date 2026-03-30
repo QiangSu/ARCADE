@@ -21,11 +21,12 @@
 ## Repository Structure
 ```text
 ARCADE/
-├── .gitignore                      # Specifies files for Git to ignore
-├── LICENSE                         # Project license (e.g., MIT)
-├── README.md                       # This documentation file
-├── requirements.txt                # Exact Python dependencies for reproducibility
-└── 01a_ARCADE_ref_optimizer.py     # The main executable Python script
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Reference optimization and clustering
+└── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
 ```
 
 ---
@@ -426,6 +427,436 @@ Common abbreviations are automatically expanded:
 | `L5-6 Exc` | `layer 5-6 excitatory neuron` |
 | ... | |
 ---
+
+
+
+# 02_ARCADE_spatial_decoupler: Spatial Transcriptomics Deconvolution and Cell State Inference
+
+
+**02_ARCADE_spatial_decoupler** is a comprehensive deep learning pipeline for spatial transcriptomics deconvolution. It estimates cell type proportions, infers continuous cell states, and generates publication-quality visualizations. The pipeline implements a two-stage variational autoencoder framework (scVAE + stVAE) that leverages single-cell RNA-seq references to deconvolve spatial transcriptomics data.
+
+## Key Features
+
+- **Two-Stage VAE Framework**: First trains a conditional VAE on single-cell reference (**scVAE**), then transfers learned representations to spatial deconvolution (**stVAE**).
+- **Cell Type Proportion Estimation**: Learns softmax-normalized proportions with entropy and sparsity regularization for biologically meaningful decompositions.
+- **Continuous Cell State Inference**: Captures within-cell-type phenotypic variation (`γ`) using empirical priors learned from single-cell data.
+- **Gene Correction Factors**: Learns platform-specific gene correction factors (`α`) to account for technical differences between scRNA-seq and spatial platforms.
+- **Pseudo-Spot Consistency Training**: Generates synthetic spots from single-cell data for self-supervised consistency regularization.
+- **Two-Stage Training with Warm Start**: Option to initialize with stAE proportions before full VAE training for improved convergence.
+- **Flexible Inference Modes**: Supports both amortized (neural network) and non-amortized (per-spot) inference for cell states.
+- **Comprehensive Visualizations**: Generates spatial proportion maps, marker gene overlays, cell state continuums, UMAP embeddings, and co-occurrence heatmaps.
+- **Marker Gene Analysis**: Computes marker gene rankings and differential expression with volcano plots.
+
+---
+
+## Repository Structure
+```text
+ARCADE/
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Reference optimization and clustering
+└── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
+```
+
+---
+
+## Step-by-Step Workflow
+
+### 1. Prerequisites
+
+-   Git installed on your system.
+-   Python 3.8 or newer.
+-   Access to a Linux-based command line.
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/QiangSu/ARCADE.git
+cd ARCADE
+```
+
+### 3. Set Up a Python Environment (Recommended)
+
+Using a virtual environment prevents conflicts with other Python projects.
+
+```bash
+# Create a new conda environment with Python 3.9
+conda create -n ARCADE_env python=3.9
+
+# Activate the environment
+conda activate ARCADE_env
+
+```
+
+```bash
+# Create a virtual environment named 'venv'
+python3 -m venv venv
+
+# Activate the environment
+source venv/bin/activate
+
+# To deactivate later, simply run: deactivate
+```
+
+### 4. Install Dependencies
+
+The `requirements.txt` file contains the exact library versions for perfect reproducibility.
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Prepare Your Data
+
+-   **scRNA-seq Reference**: A CSV file with rows as cells and columns as genes. The first column should be cell barcodes/IDs (index).
+-   **scRNA-seq Labels**: A CSV file mapping cell barcodes to cell type labels.
+-   **Spatial Transcriptomics Counts**: A CSV file with rows as spots and columns as genes. The first column should be spot barcodes (index).
+-   **Spatial Coordinates (Optional)**: A CSV file with spot coordinates for spatial visualization. Supports 10x Genomics tissue_positions format or standard x,y columns.
+
+### 6. Run the Pipeline
+
+Basic Deconvolution (Full VAE Mode)
+
+```bash
+python 02_ARCADE_spatial_decoupler.py \
+  --sc_counts /path/to/sc_counts.csv \
+  --sc_labels /path/to/sc_labels.csv \
+  --st_counts /path/to/st_counts.csv \
+  --st_coords /path/to/tissue_positions.csv \
+  --output_dir ./spatial_results/ \
+  --sc_epochs 200 \
+  --st_epochs 2000 \
+  --latent 10 \
+  --batch_size 128 \
+  --gpu
+```
+
+Two-Stage Training with Warm Start
+
+```bash
+python 02_ARCADE_spatial_decoupler.py \
+  --sc_counts /path/to/sc_counts.csv \
+  --sc_labels /path/to/sc_labels.csv \
+  --st_counts /path/to/st_counts.csv \
+  --st_coords /path/to/tissue_positions.csv \
+  --output_dir ./spatial_results/ \
+  --two_stage \
+  --freeze_proportions \
+  --sc_epochs 200 \
+  --st_epochs 2000
+```
+
+Proportion-Only Mode (Faster, No Cell States)
+
+```bash
+python 02_ARCADE_spatial_decoupler.py \
+  --sc_counts /path/to/sc_counts.csv \
+  --sc_labels /path/to/sc_labels.csv \
+  --st_counts /path/to/st_counts.csv \
+  --st_coords /path/to/tissue_positions.csv \
+  --output_dir ./spatial_results/ \
+  --mode proportion_only \
+  --proportion_method simplex_ae \
+  --st_epochs 1000
+```
+
+With Pseudo-Spot Consistency Training
+
+```bash
+python 02_ARCADE_spatial_decoupler.py \
+  --sc_counts /path/to/sc_counts.csv \
+  --sc_labels /path/to/sc_labels.csv \
+  --st_counts /path/to/st_counts.csv \
+  --st_coords /path/to/tissue_positions.csv \
+  --output_dir ./spatial_results/ \
+  --use_pseudo_spots \
+  --n_pseudo_spots 1000 \
+  --pseudo_weight 1.0 \
+  --pseudo_warmup_epochs 50
+```
+
+Including Unknown Cell Type Category
+
+```bash
+python 02_ARCADE_spatial_decoupler.py \
+  --sc_counts /path/to/sc_counts.csv \
+  --sc_labels /path/to/sc_labels.csv \
+  --st_counts /path/to/st_counts.csv \
+  --output_dir ./spatial_results/ \
+  --include_unknown \
+  --temperature 0.5
+```
+---
+
+## Command-Line Arguments Explained
+
+### Input/Output Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--sc_counts <path>` | Path to scRNA-seq counts CSV. | Required. Rows = cells, columns = genes, first column = barcode index. |
+| `--sc_labels <path>` | Path to scRNA-seq labels CSV. | Required. Maps cell barcodes to cell type labels. |
+| `--st_counts <path>` | Path to spatial counts CSV. | Required. Rows = spots, columns = genes, first column = barcode index. |
+| `--st_coords <path>` | Path to spatial coordinates CSV. | Optional. Used for spatial visualization. Supports 10x format or standard x,y columns. |
+| `--output_dir <path>` | Directory for output files. | Required. All results are saved here. |
+
+### Model Architecture Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--latent <int>` | Latent dimension size. | Default: 10. Controls γ dimensionality. |
+| `--batch_size <int>` | Training batch size. | Default: 128. |
+| `--gpu` | Force GPU usage if available. | Enables CUDA acceleration. |
+
+### Training Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--sc_epochs <int>` | scVAE training epochs. | Default: 200. Stage 1 reference training. |
+| `--st_epochs <int>` | stVAE training epochs. | Default: 2000. Stage 2 spatial deconvolution. |
+| `--lr <float>` | Learning rate. | Default: 0.005 |
+| `--reg_entropy <float>` | Entropy regularization weight. | Default: 10.0. Higher values produce sharper proportions. |
+| `--reg_sparsity <float>` | Sparsity regularization weight. | Default: 1.0. Encourages sparse proportions. |
+| `--temperature <float>` | Softmax temperature. | Default: 0.5. Lower values produce sharper distributions. |
+
+### Mode Selection Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--mode <choice>` | Deconvolution mode. | full (default): VAE with cell states. proportion_only: proportions only. |
+| `--proportion_method <choice>` | Method for proportion_only mode. | nnls, softmax_regression, or simplex_ae (default). |
+| `--inference_mode <choice>` | Gamma inference mode. | amortized (default): neural network. non_amortized: per-spot parameters. |
+
+### Two-Stage Training Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--two_stage` | Enable two-stage training. | Runs stAE first, then stVAE with warm start. |
+| `--freeze_proportions` | Fix proportions to stAE values. | No proportion learning in stVAE stage. |
+| `--freeze_intensity` | Fix gene correction (α) to stAE values. | Constrains intensity patterns. |
+| `--soft_constraint` | Use soft KL constraint on proportions. | Alternative to hard freezing. |
+| `--constraint_strength <float>` | KL constraint strength. | Default: 10.0. Higher = closer to stAE. |
+| `--decorrelate_gamma <float>` | Gamma-pi decorrelation weight. | Default: 0.0. Reduces γ–π correlation. |
+
+### Pseudo-Spot Training Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--use_pseudo_spots` | Enable pseudo-spot consistency training. | Generates synthetic spots for self-supervision. |
+| `--n_pseudo_spots <int>` | Number of synthetic spots. | Default: 1000. |
+| `--cells_per_spot_range <int> <int>` | Range of cells per pseudo-spot. | Default: 5 15. |
+| `--pseudo_weight <float>` | Weight of pseudo-spot loss. | Default: 1.0. |
+| `--pseudo_warmup_epochs <int>` | Warmup epochs for pseudo-spot. |Default: 50. Gradually increases weight. |
+| `--pseudo_training_ratio <int>` | Ratio of pseudo to real batch size. | Default: 1. |
+
+### Unknown Cell Type Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--include_unknown` | Add unknown cell type category. | Captures cells not represented in the reference. |
+
+### Visualization Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--hex_orientation <float>` | Hexagon orientation in degrees. | Default: 0.0. 0 = pointy-top, 30 = flat-top. |
+| `--presence_threshold <float>` | Minimum proportion for visualization. | Default: 0.05 (5%). Filters low-proportion spots. |
+| `--latent_combination <choice>` | Method to combine latent dimensions. | pca (default), sum, norm, weighted, or latent0. |
+
+---
+
+## Mathematical Framework
+
+scVAE (Stage 1: Reference Training)
+The scVAE learns a conditional generative model for single-cell expression:
+
+```math
+\gamma_n \sim \mathcal{N}(0, I)
+x_{ng} | \gamma_n, c_n \sim \text{NB}(l_n \times \rho_g(\gamma_n, c_n), \theta_g)
+```
+Where:
+- **$\gamma_n$**: Latent cell state for cell $n$
+- **$c_n$**: Cell type label for cell $n$
+- **$l_n$**: Library size (total counts) for cell $n$
+- **$\rho_g$**: Decoder mapping latent state + cell type to normalized expression
+- **$\theta_g$**: Gene-specific dispersion parameter
+
+stVAE (Stage 2: Spatial Deconvolution)
+The stVAE decomposes spatial spots as mixtures of cell types:
+```math
+x_{sg} | \pi_s, \{\gamma_{sc}\} \sim \text{NB}(l_s \times \alpha_g \times \sum_c \pi_{sc} \times \rho_g(\gamma_{sc}, c), \theta_g)
+\gamma_{sc} \sim \mathcal{N}(\mu_c, \Sigma_c) \quad \text{[empirical prior from scVAE]}
+```
+
+Where:
+- **$\pi_s$**: Cell type proportions at spot $s$
+- **$\gamma_{sc}$**: Cell-type-specific state at spot $s$ for type $c$
+- **$\alpha_g$**: Gene-specific correction factor for platform differences
+- **$\mu_c, \Sigma_c$**: Empirical prior learned from scRNA-seq latent states
+
+Loss Function
+```math
+\mathcal{L} = \text{NLL} + \lambda_\gamma \text{KL}_\gamma + \lambda_\alpha \mathcal{L}_\alpha + \lambda_\pi \mathcal{L}_\pi
+```
+Where:
+- **$\text{NLL}$**: Negative Binomial log-likelihood
+- **$\text{KL}_\gamma$**: KL divergence for $\gamma$ against the empirical prior
+- **$\mathcal{L}_\alpha$**: Regularization on gene correction factors
+- **$\mathcal{L}_\pi$**: Entropy/sparsity regularization on proportions
+
+
+
+## Output Directory Structure
+
+The script generates a structured output directory. Below is an example structure and an explanation of key files.
+
+```
+<output_dir>/
+├── stvae_model.pt
+├── proportions.csv
+├── intensity_maps.csv
+├── intensity_maps_raw.csv
+├── alpha_gene_correction.csv
+├── gamma_states.npy
+├── gamma_states_<celltype>.csv
+├── imputed_expr_<celltype>.csv
+├── denoised_tissue_reconstruction.csv
+│
+├── cooccurrence_heatmap.png
+├── spatial_proportion_maps.png
+├── spatial_dominant_type.png
+├── latent_umap.png
+├── marker_genes_summary.png
+├── marker_genes_dotplot.png
+├── marker_genes_<celltype>.png
+│
+├── continuum_<celltype>.png
+├── continuum_full_<celltype>.png
+├── spatial_state_<celltype>.png
+├── global_umap_embedding.npy
+│
+├── marker_gene_rankings/
+│   ├── <celltype>_markers.csv
+│   └── ...
+│
+├── differential_expression/
+│   ├── <celltype>_de.csv
+│   ├── volcano_<celltype>.png
+│   └── ...
+│
+├── gene_analysis_summary.txt
+│
+└── stvae_refined/
+    ├── spatial_proportion_maps.png
+    ├── spatial_dominant_type.png
+    └── ...
+```
+
+## Key File Explanations
+
+### Main Outputs
+
+| File | Description |
+|------|-------------|
+| `proportions.csv` | Primary output. Cell type proportions per spot. Rows = spots, columns = cell types. |
+| `intensity_maps.csv` | Normalized intensity (relative abundance) per cell type per spot. |
+| `alpha_gene_correction.csv` | Gene-specific correction factors capturing platform differences. |
+| `stvae_model.pt` | Saved model for reloading or transfer learning. |
+
+### Cell State Outputs (Full Mode Only)
+
+| File | Description |
+|------|-------------|
+| `gamma_states.npy` | Raw latent states. Shape: [n_spots, n_cell_types, n_latent]. |
+| `gamma_states_<celltype>.csv` | Flattened gamma matrix for each cell type. Columns: Latent_0, Latent_1, ... |
+| `imputed_expr_<celltype>.csv` | Imputed cell-type-specific expression per spot. |
+| `denoised_tissue_reconstruction.csv` | Full tissue reconstruction: l_s × α × Σ(π × ρ). |
+
+### Visualization Outputs
+
+| File | Description |
+|------|-------------|
+| `spatial_proportion_maps.png` | Grid of spatial maps showing proportions per cell type. |
+| `spatial_dominant_type.png` | Single map showing the dominant cell type per spot. |
+| `cooccurrence_heatmap.png` | Heatmap showing cell type co-occurrence patterns. |
+| `latent_umap.png` | UMAP embedding of spot-level latent representations. |
+| `marker_genes_dotplot.png` | Seurat-style dot plot of marker gene expression. |
+| `marker_genes_summary.png` | Summary showing top marker per cell type spatially. |
+| `marker_genes_<celltype>.png` | Detailed marker gene spatial maps per cell type. |
+
+### Cell State Continuum Visualizations (Full Mode Only)
+
+| File | Description |
+|------|-------------|
+| `continuum_<celltype>.png` | UMAP + spatial map showing cell state variation for present spots only. |
+| `continuum_full_<celltype>.png` | UMAP showing all spots colored by cell state using a consistent layout. |
+| `spatial_state_<celltype>.png` | Spatial map of latent state values per cell type. |
+| `global_umap_embedding.npy` | Saved UMAP embedding for consistent visualization. |
+
+### Gene Analysis Outputs
+
+| File | Description |
+|------|-------------|
+| `marker_gene_rankings/<celltype>_markers.csv` | Comprehensive marker gene ranking with multiple scores. |
+| `differential_expression/<celltype>_de.csv` | Full differential expression table for one-vs-rest comparison. |
+| `differential_expression/volcano_<celltype>.png` | Volcano plot of differential expression results. |
+| `gene_analysis_summary.txt` | Summary statistics of marker and DE analysis. |
+
+### Two-Stage Training Outputs (If --two_stage)
+
+| File | Description |
+|------|-------------|
+| `proportions_stvae_refined.csv` | stVAE-refined proportions after warm start. |
+| `intensity_maps_stvae_refined.csv` | stVAE-refined intensity maps. |
+| `stvae_refined/spatial_proportion_maps.png` | Spatial maps using refined proportions. |
+| `stvae_refined/spatial_dominant_type.png` | Dominant-type map using refined proportions. |
+---
+
+---
+
+## Marker Gene Analysis Details
+
+### Marker Ranking Scores
+
+| Score | Description | Formula |
+|----------|-------------|-------------------|
+| Expression | Mean expression in reference profile | profile[c, g] |
+| Specificity | Ratio to max of other types | profile[c, g] / max(profile[other, g]) |
+| Log2 FC | Fold change vs mean of others | log2(profile[c] / mean(profile[other])) |
+| Combined Score | Expression × log(1 + specificity) | Primary ranking metric |
+| Gini Specificity | How specific to this type | Higher = more specific |
+| Z-Score | Standardized expression | (expr - mean) / std |
+
+### Differential Expression Statistics
+
+| Metric | Description |
+|----------|-------------|
+| `log2_fold_change` | Log2 fold change of mean expression for this type vs others. | 
+| `p_value` | Wilcoxon rank-sum test p-value. | 
+| `p_adjusted` | Benjamini-Hochberg FDR-corrected p-value. | 
+| `cohens_d` | Effect size estimate. | 
+| `pct_expressing_this` | Percent of cells expressing the gene in this type. | 
+| `pct_expressing_other` | Percent of cells expressing the gene in other types. | 
+
+### Latent Combination Methods
+The --latent_combination argument controls how multi-dimensional latent states are visualized.
+
+| Method | Description | Use Case |
+|----------|-------------|-------------------|
+| pca | First principal component of latent dimensions | Default. Captures the main variance axis |
+| sum | Simple sum across latent dimensions | Quick summary, may lose information |
+| norm | L2 norm of the latent vector | Captures overall activation strength |
+| weighted | Variance-weighted combination | Emphasizes high-variance dimensions |
+| latent0 | First latent dimension only | Original behavior, single-dimension view |
+
+---
+
+
+
+
+
 
 ## License
 
