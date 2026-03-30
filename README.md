@@ -87,7 +87,7 @@ pip install -r requirements.txt
 Here is an example command for a single-sample analysis:
 
 ```bash
-python scBOA.py \
+python 01a_ARCADE_ref_optimizer.py \
   --data_dir /path/to/your/cellranger_output/ \
   --output_dir ./my_analysis_output/ \
   --output_dir ./my_analysis_output/ \
@@ -106,7 +106,7 @@ python scBOA.py \
 Single-sample refinement analysis
 
 ```bash
-python scBOA.py \
+python 01a_ARCADE_ref_optimizer.py \
   --data_dir /path/to/your/cellranger_output/ \
   --output_dir ./my_analysis_output/ \
   --model_path ./reference/Healthy_COVID19_PBMC.pkl \
@@ -127,7 +127,7 @@ python scBOA.py \
 Single-sample analysis with Marker Prior Score (MPS)
 
 ```bash
-python scBOA.py \
+python 01a_ARCADE_ref_optimizer.py \
   --data_dir /path/to/your/cellranger_output/ \
   --output_dir ./my_analysis_output/ \
   --model_path ./reference/Healthy_COVID19_PBMC.pkl \
@@ -145,7 +145,7 @@ python scBOA.py \
 Analysis with Spatial Transcriptomics integration (for deconvolution):
 
 ```bash
-python scBOA.py \
+python 01a_ARCADE_ref_optimizer.py \
   --data_dir /path/to/your/cellranger_output/ \
   --output_dir ./my_analysis_output/ \
   --model_path ./reference/Healthy_COVID19_PBMC.pkl \
@@ -157,7 +157,7 @@ python scBOA.py \
 Multiple-sample refinement analysis:
 
 ```bash
-python scBOA.py \
+python 01a_ARCADE_ref_optimizer.py \
   --multi_sample ./WT_CellRanger/ ./treated_CellRanger/ \
   --output_dir ./my_analysis_output/ \
   --model_path ./reference/Mouse_Whole_Brain.pkl \
