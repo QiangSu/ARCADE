@@ -2,6 +2,7 @@
 
 # 01a_ARCADE_ref_optimizer: scRNA-seq Bayesian Optimization and Analysis
 
+[Uploading Fig1 - 副本.tif…]()
 
 **01a_ARCADE_ref_optimizer** is an integrated, two-stage computational pipeline for single-cell RNA sequencing (scRNA-seq) analysis. It automates the discovery of optimal processing parameters using Bayesian Optimization (Stage 1) and then applies these parameters to a comprehensive downstream analysis workflow (Stage 2). The pipeline also features an optional multi-level refinement process (Stage 3/4) to iteratively re-analyze and improve annotations for low-confidence cell clusters.
 
@@ -548,9 +549,8 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 | `--hvg_min_disp <float>` | Min dispersion for two-step HVG. | See above. |
 
 
-
 # 02_ARCADE_spatial_decoupler: Spatial Transcriptomics Deconvolution and Cell State Inference
-
+[Uploading Fig1 - 副本 (2).tif…]()
 
 **02_ARCADE_spatial_decoupler** is a comprehensive deep learning pipeline for spatial transcriptomics deconvolution. It estimates cell type proportions, infers continuous cell states, and generates publication-quality visualizations. The pipeline implements a two-stage variational autoencoder framework (scVAE + stVAE) that leverages single-cell RNA-seq references to deconvolve spatial transcriptomics data.
 
