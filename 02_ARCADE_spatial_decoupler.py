@@ -2110,7 +2110,7 @@ class scVAETrainer:
         )
         
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode='min', factor=0.5, patience=10, verbose=True
+            self.optimizer, mode='min', factor=0.5, patience=10
         )
         
         self.early_stopping = EarlyStopping(
