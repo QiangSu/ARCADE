@@ -161,11 +161,16 @@ refinement_depth_*/
 *_FINAL_refined_*.csv
 *_FINAL_refined_*.png
 *_FINAL_refined_*.txt
+*_refinement_before_after_comparison.png   # <--- ADDED
+*_cells_changed_by_refinement*.png          # <--- ADDED
 
 # Consistent cells export
 consistent_cells_subset/
 *_consistent_cells_*.csv
 *_consistent_cells_*.png
+*_all_cells_REFINED_annotations*.csv        # <--- ADDED
+*_REFINED_cell_type_counts.csv              # <--- ADDED
+*_consistency_context_all_cells_umap.png    # <--- ADDED
 
 # Deconvolution reference files
 deconvolution_reference_REFINED/
@@ -175,6 +180,7 @@ st_counts.csv
 sc_counts_REFINED.csv
 sc_labels_REFINED.csv
 sc_labels_REFINED_with_comparison.csv
+REFINED_deconvolution_summary.txt           # <--- ADDED
 
 # Cell type marker details
 celltype_marker_details/
@@ -356,3 +362,54 @@ secrets.json
 config.local.json
 .env.local
 .env.*.local
+
+# =============================================================================
+# ARCADE Output & Deep Learning Files
+# =============================================================================
+# Ignore trained PyTorch model weights
+*.pt
+*.pth
+
+# Ignore large numpy arrays and matrices
+*.npy
+*.npz
+*.h5ad
+
+# Ignore output directories (prevents uploading gigabytes of results)
+ARCADE_Output/
+*_output/
+
+# =============================================================================
+# Stage 2: STVAE Spatial Deconvolution Outputs
+# =============================================================================
+# Common output directory names
+spatial_results/
+spatial_output/
+st_results/
+st_output/
+
+# Subdirectories created by the script
+stvae_refined/
+marker_gene_rankings/
+differential_expression/
+
+# Main CSV Data Outputs
+proportions*.csv
+intensity_maps*.csv
+alpha_gene_correction.csv
+denoised_tissue_reconstruction.csv
+
+# Cell State & Imputation CSVs
+gamma_states_*.csv
+imputed_expr_*.csv
+
+# TXT Summaries
+gene_analysis_summary.txt
+
+# Spatial & STVAE Specific Plots
+spatial_*.png
+continuum_*.png
+volcano_*.png
+marker_genes_*.png
+cooccurrence_heatmap.png
+latent_umap.png
