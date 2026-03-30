@@ -361,6 +361,24 @@ The script generates a structured output directory. Below is an example structur
 | `*_consistency_context_all_cells_umap.png` | UMAP with inconsistent cells in grey. |
 | `refined_annotation_exports/` | Additional exports using refined annotations. |
 
+### Marker Gene Details: `stage_2_final_analysis/celltype_marker_details/`
+*(Generated if `--marker_prior_db` is provided)*
+
+| File | Description |
+|------|-------------|
+| `*_celltype_matching_summary.csv` | Summary of how annotated cell types matched the external marker database (Exact, Fuzzy, etc.). |
+| `*_celltype_top_markers.csv` | Ranked list of the top differentially expressed marker genes per cell type. |
+| `*_celltype_canonical_overlap.csv` | Detailed overlap metrics between calculated DEGs and known canonical markers. |
+| `*_celltype_hvg_genes.csv` | Top Highly Variable Genes (HVGs) expressed per cell type. |
+
+### Marker-Based Annotations 
+*(Generated in main output or subset directories if `--marker_prior_db` is provided)*
+
+| File | Description |
+|------|-------------|
+| `*_marker_based_annotation*.csv` | Cell-by-cell metadata including automatic marker-driven cell type predictions. |
+| `*_marker_based_annotation*.png` | UMAP plots visualizing the marker-driven annotations. |
+
 ---
 
 ## Marker Prior Score (MPS) Details
