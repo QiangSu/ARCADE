@@ -302,6 +302,15 @@ The script generates a structured output directory. Below is an example structur
 │   └── refinement_depth_1/
 │       └── ... (mirrors Stage 2 for refined subset) ...
 │
+├── marker_based_annotation/
+│   ├── sc_analysis_repro_marker_based_annotation.csv
+│   ├── sc_analysis_repro_marker_based_annotation_umap.png
+│   └── celltype_marker_details/
+│       ├── sc_analysis_repro_celltype_top_markers.csv
+│       ├── sc_analysis_repro_celltype_matching_summary.csv
+│       ├── sc_analysis_repro_celltype_canonical_overlap.csv
+│       └── sc_analysis_repro_celltype_hvg_genes.csv
+│
 └── consistent_cells_subset/
     ├── sc_analysis_repro_consistent_cells_*.csv
     ├── sc_analysis_repro_consistent_cells_*_umap.png
