@@ -1,28 +1,35 @@
-# Core Data & Math
-numpy>=1.21.0
-pandas>=1.4.0
-scipy>=1.7.0
-
-# Single-Cell & Spatial Ecosystem
-anndata>=0.8.0
+# ==========================================
+# Python Dependencies (for 01a and 02)
+# ==========================================
+# Core Data & scRNA-seq Libraries
 scanpy>=1.9.0
+anndata>=0.8.0
+pandas>=1.4.0
+numpy>=1.21.0
+
+# Cell Annotation
 celltypist>=1.3.0
 
-# Machine Learning & Deep Learning
-torch>=1.9.0
+# Bayesian Optimization & ML
 scikit-learn>=1.0.0
-umap-learn>=0.5.3
+umap-learn>=0.5.0
 
-# Clustering & Batch Integration (Implicit Scanpy Dependencies)
-leidenalg>=0.9.0
-harmonypy>=0.0.9
-
-# Bayesian Optimization
-scikit-optimize>=0.9.0
-
-# String Matching / Fuzzy Logic
-rapidfuzz>=3.0.0
-
-# Plotting & Visualization
+# Visualization
 matplotlib>=3.5.0
 seaborn>=0.11.0
+
+# PyTorch (for stVAE Spatial Deconvolution)
+torch>=1.12.0
+tqdm>=4.60.0
+
+# ==========================================
+# R Dependencies (for 01b Script)
+# ==========================================
+# Run the following in your R console to install:
+# 
+# install.packages(c("Seurat", "dplyr", "ggplot2", "argparse", 
+#                    "rBayesianOptimization", "Rtsne", "cluster", 
+#                    "patchwork", "tibble", "viridis", "Matrix", 
+#                    "uwot", "scales", "harmony", "BiocManager"))
+#
+# BiocManager::install(c("AnnotationDbi", "org.Hs.eg.db", "org.Mm.eg.db"))

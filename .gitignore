@@ -413,3 +413,32 @@ volcano_*.png
 marker_genes_*.png
 cooccurrence_heatmap.png
 latent_umap.png
+
+
+# =============================================================================
+# R Specific Files
+# =============================================================================
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+*.Rapp.history
+
+# =============================================================================
+# R Pipeline-Specific Outputs (01b Script)
+# =============================================================================
+# Ignore all exported Seurat objects (they are massive)
+*_seurat.rds
+*_full_with_consistency.rds
+*_seurat_consistent_marker_annotated.rds
+*.rds
+
+# R specific output files not caught by previous wildcards
+*_best_parameters.csv
+*_consistency_diagnostics.txt
+*_consistent_barcodes.txt
+*_celltype_summary.csv
+*_all_cells_consistency.csv
+*_consistency_by_celltype.csv
+*_mps_detailed.csv

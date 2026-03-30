@@ -274,34 +274,14 @@ The script generates a structured output directory. Below is an example structur
 │   ├── bayesian_opt_biological_balanced_yield_scores_report.csv
 │   ├── bayesian_opt_biological_balanced_optimizer_convergence.png
 │   ├── bayesian_opt_biological_balanced_BO-EI_opt_result.skopt
-│   ├── ... (other plots and strategy files) ...
-│   └── refinement_depth_1/
-│       └── ... (mirrors structure for refined cells) ...
+│   ├── ...
 │
 ├── stage_2_final_analysis/
 │   ├── sc_analysis_repro_final_processed.h5ad
 │   ├── sc_analysis_repro_final_processed_with_refinement.h5ad
 │   ├── sc_analysis_repro_all_annotations.csv
 │   ├── sc_analysis_repro_all_annotations_with_refinement.csv
-│   ├── sc_analysis_repro_FINAL_refined_annotations.csv
-│   ├── sc_analysis_repro_leiden_cluster_annotation_scores.csv
-│   ├── sc_analysis_repro_consensus_group_annotation_scores.csv
-│   ├── sc_analysis_repro_combined_cluster_annotation_scores.csv
-│   ├── sc_analysis_repro_cell_type_journey_summary.csv
-│   ├── sc_analysis_repro_celltype_matching_diagnostics.csv
-│   ├── sc_analysis_repro_umap_leiden.png
-│   ├── sc_analysis_repro_cluster_celltypist_umap.png
-│   ├── sc_analysis_repro_umap_low_confidence_greyed.png
-│   ├── sc_analysis_repro_FINAL_refined_annotation_umap.png
-│   ├── sc_analysis_repro_refinement_before_after_comparison.png
-│   ├── sc_analysis_repro_cells_changed_by_refinement_umap.png
-│   ├── celltype_marker_details/
-│   │   ├── sc_analysis_repro_celltype_top_markers.csv
-│   │   ├── sc_analysis_repro_celltype_matching_summary.csv
-│   │   ├── sc_analysis_repro_celltype_canonical_overlap.csv
-│   │   └── sc_analysis_repro_celltype_hvg_genes.csv
-│   └── refinement_depth_1/
-│       └── ... (mirrors Stage 2 for refined subset) ...
+│   ├── ...
 │
 ├── marker_based_annotation/
 │   ├── sc_analysis_repro_marker_based_annotation.csv
@@ -427,6 +407,145 @@ Common abbreviations are automatically expanded:
 | `L5-6 Exc` | `layer 5-6 excitatory neuron` |
 | ... | |
 ---
+
+
+# 01b_ARCADE_ref_optimizer: R-Based Single-Cell Reference Optimization Pipeline
+
+
+**01b_ARCADE_ref_optimizer.R** is an advanced, fully integrated R pipeline for preparing single-cell RNA-seq references. Leveraging Seurat and Harmony, it automates the discovery of optimal clustering parameters through Bayesian Optimization, performs batch integration, iteratively refines low-confidence cell populations, and conducts marker-based biological annotation to generate perfect inputs for spatial deconvolution (Stage 2).
+
+## Key Features
+
+-   **Automated Bayesian Optimization**: Dynamically finds the optimal hyperparameter combination (HVGs, PCs, neighbors, resolution) rather than relying on manual trial-and-error.
+-   **Multi-Objective Scoring**: Balances structural integrity (Silhouette), classification accuracy (CAS), and biological relevance (Marker Prior Score/MPS).
+-   **Native Batch Integration**: Built-in support for Harmony to seamlessly correct batch effects across complex single-cell datasets.
+-   **Iterative Refinement**: Automatically detects "mixed" or low-confidence clusters and recursively re-optimizes them to resolve hidden cell states.
+-   **Marker-Based Annotation**: Evaluates clusters against a provided marker database (e.g., CellMarker) to assign high-confidence biological labels automatically.
+-   **Perfect Stage 2 Synchronization**: Generates exactly formatted .csv count and label files perfectly tailored for 02_ARCADE_spatial_decoupler.py.
+
+---
+
+## Repository Structure
+```text
+ARCADE/
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer (Scanpy)
+├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer (Seurat)
+└── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
+```
+
+---
+
+## Step-by-Step Workflow
+
+### 1. Prerequisites
+
+-   R (version >= 4.1.0) installed on your system.
+-   Access to a Linux/macOS command line.
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/QiangSu/ARCADE.git
+cd ARCADE
+```
+
+### 3.  Install R Dependencies
+
+You can install the required R packages by opening your R console and running:
+
+```bash
+install.packages(c("argparse", "Seurat", "dplyr", "ggplot2", "ParBayesianOptimization"))
+# Install Harmony for batch integration
+install.packages("harmony")
+
+```
+
+### 4. Prepare Your Data
+
+-   **scRNA-seq Data**: A directory containing 10x Genomics output (barcodes.tsv, features.tsv, matrix.mtx), or an .h5 file.
+-   **Reference Seurat Object**: A pre-annotated .rds file used as the truth-base for calculating the Cell Annotation Score (CAS).
+-   **Marker Database (Optional)**: A CSV file containing standard marker genes per cell type for the Marker Prior Score (MPS) biological validation.
+
+
+### 5. Run the Pipeline
+
+Basic Optimization
+
+```bash
+Rscript 01b_ARCADE_ref_optimizer.R \
+  --data_dir ./data/raw_counts/ \
+  --reference_path ./data/reference_seurat.rds \
+  --output_dir ./scRNA_results/ \
+  --n_calls 50
+```
+
+Optimization with Harmony Batch Integration
+
+```bash
+Rscript 01b_ARCADE_ref_optimizer.R \
+  --data_dir ./data/raw_counts/ \
+  --reference_path ./data/reference_seurat.rds \
+  --output_dir ./scRNA_results/ \
+  --batch_col orig.ident \
+  --harmony_max_iter 20 \
+  --n_calls 50
+```
+
+Full Pipeline with Biological Marker Validation (MPS)
+
+```bash
+Rscript 01b_ARCADE_ref_optimizer.R \
+  --data_dir ./data/raw_counts/ \
+  --reference_path ./data/reference_seurat.rds \
+  --marker_db_path ./data/marker_database.csv \
+  --target balanced \
+  --model_type mps_integrated \
+  --output_dir ./scRNA_results/ \
+  --cas_refine_threshold 70.0
+```
+---
+
+## Command-Line Arguments Explained
+
+### Stage 1 & 2: Main I/O and Mode
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--data_dir <path>` | Path to input data. | Required. Accepts 10x directory, .h5, or matrix format. |
+| `--output_dir <path>` | Directory for output files. | Default: ./output/. All results, plots, and CSVs go here. |
+| `--output_prefix <str>` | Prefix for general outputs. | Default: scrna. Prepended to filenames. |
+| `--final_run_prefix <str>` | Prefix for final analysis. | Default: final. Marks the optimal final output files. |
+
+### Reference & Species Arguments
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--reference_path <path>` | Path to reference object. | Required. Must be a Seurat .rds file |
+| `--reference_labels_col` | Metadata column for labels. | Default: cell_type. Where to find annotations in the reference. |
+| `--reference_assay <str>` | Assay to use from reference. | Default: RNA. |
+| `--species <str>` | Species for standardization. | Default: human. Accepts human or mouse. |
+
+### Optimization Parameters
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--target <choice>` | Metric to optimize. | Default: balanced. Choices: balanced, weighted_cas, simple_cas, mcs, mps, all. |
+| `--model_type <choice>` | Scoring logic model. | Default: annotation. Choices: annotation, structural, mps_integrated, mps_bonus. |
+| `--n_calls <int>` | Total Bayesian iterations. | Default: 50. Number of hyperparameter combinations to test. |
+| `--n_init_points <int>` | Initial random samples. | Default: 10. Helps the optimizer explore before exploiting. |
+| `--cas_aggregation_method` | CAS score aggregation. | Default: leiden (cluster-level). Alternative: consensus. |
+
+### Stage 1 & 2: HVG Selection Method
+
+| Argument | Description | Explanation/Usage |
+|----------|-------------|-------------------|
+| `--hvg_min_mean <float>` | Min mean for two-step HVG. | Activates pre-filtering if set with other HVG params. |
+| `--hvg_max_mean <float>` | Max mean for two-step HVG. | See above. |
+| `--hvg_min_disp <float>` | Min dispersion for two-step HVG. | See above. |
 
 
 
@@ -852,10 +971,6 @@ The --latent_combination argument controls how multi-dimensional latent states a
 | latent0 | First latent dimension only | Original behavior, single-dimension view |
 
 ---
-
-
-
-
 
 
 ## License
