@@ -4776,21 +4776,57 @@ def objective_function(n_hvg, n_pcs, n_neighbors, resolution):
             # Multiple batches found - run Harmony integration
             print(f"       -> [Harmony] Running integration across {n_batches} batches...")
             try:
-                sc.external.pp.harmony_integrate(
-                    adata_proc,
-                    key='sample',
-                    basis='X_pca',
-                    adjusted_basis='X_pca_harmony',
-                    random_state=RANDOM_SEED
+                import harmonypy as hm
+                
+                # Get PCA embeddings and batch info - USE adata_proc NOT adata_trial
+                pca_data = adata_proc.obsm['X_pca'].copy()
+                meta_data = pd.DataFrame(
+                    {'batch': adata_proc.obs['sample'].values}, 
+                    index=adata_proc.obs_names
                 )
-                embedding_to_use = 'X_pca_harmony'
+                
+                # Run Harmony directly
+                ho = hm.run_harmony(
+                    pca_data,
+                    meta_data,
+                    'batch',
+                    random_state=RANDOM_SEED,
+                    max_iter_harmony=20,
+                    verbose=False
+                )
+                
+                # Version-aware handling of output shape
+                # harmonypy >= 0.0.10: Z_corr is (n_cells, n_pcs) - no transpose
+                # harmonypy == 0.0.9:  Z_corr is (n_pcs, n_cells) - needs transpose
+                hm_version = getattr(hm, '__version__', '0.0.9')
+                
+                if ho.Z_corr.shape == pca_data.shape:
+                    # Already correct shape (v0.0.10+)
+                    corrected = ho.Z_corr
+                elif ho.Z_corr.T.shape == pca_data.shape:
+                    # Needs transpose (v0.0.9)
+                    corrected = ho.Z_corr.T
+                else:
+                    raise ValueError(
+                        f"Unexpected Harmony output shape: {ho.Z_corr.shape}, "
+                        f"expected {pca_data.shape}"
+                    )
+                
+                # Store in adata - USE adata_proc NOT adata_trial
+                adata_proc.obsm['X_pca_harmony'] = corrected
+                pca_key_for_neighbors = 'X_pca_harmony'
+                print(f"       -> [Harmony] Integration successful (v{hm_version}): {corrected.shape}")
+                
             except Exception as e:
-                print(f"       -> [Harmony] Integration failed: {e}. Using standard PCA.")
-                embedding_to_use = 'X_pca'
+                print(f"       -> [Harmony] Integration failed: {e}")
+                print(f"       -> [Harmony] Falling back to uncorrected PCA")
+                pca_key_for_neighbors = 'X_pca'
         else:
             # Only 1 batch - skip Harmony (it's meaningless with single batch)
             print(f"       -> [Harmony] Skipping: Only {n_batches} batch found. Using standard PCA.")
-            embedding_to_use = 'X_pca'
+            pca_key_for_neighbors = 'X_pca'  # <-- FIXED: was embedding_to_use
+    else:
+        pca_key_for_neighbors = 'X_pca'
 
     sc.pp.neighbors(adata_proc, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=embedding_to_use, random_state=RANDOM_SEED)
     sc.tl.leiden(adata_proc, resolution=resolution, random_state=RANDOM_SEED)
@@ -4979,8 +5015,35 @@ def evaluate_final_metrics(params_dict):
 
     embedding_to_use = 'X_pca'
     if is_multi_sample:
-        sc.external.pp.harmony_integrate(adata_final, key='sample', basis='X_pca', adjusted_basis='X_pca_harmony', random_state=RANDOM_SEED)
-        embedding_to_use = 'X_pca_harmony'
+        n_batches = adata_final.obs['sample'].nunique()
+        if n_batches >= 2:
+            print(f"       -> [Harmony] Running integration across {n_batches} batches...")
+            try:
+                import harmonypy as hm
+                
+                pca_data = adata_final.obsm['X_pca'].copy()
+                meta_data = pd.DataFrame(
+                    {'batch': adata_final.obs['sample'].values},
+                    index=adata_final.obs_names
+                )
+                ho = hm.run_harmony(
+                    pca_data, meta_data, 'batch',
+                    random_state=RANDOM_SEED, max_iter_harmony=20, verbose=False
+                )
+                # Version-aware shape handling (CRITICAL FIX)
+                if ho.Z_corr.shape == pca_data.shape:
+                    adata_final.obsm['X_pca_harmony'] = ho.Z_corr
+                else:
+                    adata_final.obsm['X_pca_harmony'] = ho.Z_corr.T
+                
+                embedding_to_use = 'X_pca_harmony'
+                print("       -> ✓ Harmony integration complete")
+            except Exception as e:
+                print(f"       -> [WARNING] Harmony failed: {e}. Using X_pca.")
+                embedding_to_use = 'X_pca'
+        else:
+            print("       -> [INFO] Only 1 batch found, skipping Harmony")
+            embedding_to_use = 'X_pca'
 
     sc.pp.neighbors(adata_final, n_neighbors=params_dict['n_neighbors'], n_pcs=n_pcs, use_rep=embedding_to_use, random_state=RANDOM_SEED)
     sc.tl.leiden(adata_final, resolution=params_dict['resolution'], random_state=RANDOM_SEED)
