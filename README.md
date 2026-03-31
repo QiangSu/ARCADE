@@ -49,7 +49,8 @@ ARCADE/
 │   ├── run_seurat.R
 │   ├── run_SPOTlight.R
 │   ├── run_stereoscope.py
-│   └── run_tangram.py
+│   ├── run_tangram.py
+│   └── simulation_ST_data.py
 ├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer
 ├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer
 └── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
@@ -982,6 +983,7 @@ To ensure rigorous validation, ARCADE has been systematically benchmarked agains
 * **Probabilistic / Deep Learning:** `Cell2location`, `DestVI`, `Stereoscope`, `Tangram`, `Starfysh`
 * **Statistical / Matrix Factorization:** `RCTD`, `SPOTlight`
 * **Single-Cell Mapping:** `CellTrek`, `Seurat`
+* **Data Simulation:** We provide a robust semi-simulation framework (`benchmarking/simulation_ST_data.py`) that generates paired scRNA-seq and synthetic spatial transcriptomics data. It produces standardized "ground truth" spatial matrices (proportions, intensities, and cell states) to facilitate rigorous, objective accuracy evaluations.
 
 These scripts are standardized to accept the same inputs and output the same proportional matrices as ARCADE, allowing for direct, fair comparisons of speed, accuracy, and robustness.
 
