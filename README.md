@@ -363,7 +363,19 @@ The script generates a structured output directory. Below is an example structur
 | `*_marker_based_annotation*.png` | UMAP plots visualizing the marker-driven annotations. |
 
 ---
+### 📥 Download Example Test Data
 
+We provide processed Stage 01 optimization output data for the Br6432 anterior sample so you can immediately test the Stage spatial decoupler. To keep this repository lightweight, the data is hosted in our GitHub Releases.
+
+Run these commands in your terminal to download and extract the test data:
+
+```bash
+wget https://github.com/QiangSu/ARCADE/releases/download/v1.0-data/example_data_Br6432.tar.gz
+tar -xzvf example_data_Br6432.tar.gz
+```
+> 💡 **View Expected Results:** 
+> Don't want to wait 15,000 epochs to see what the output looks like? We have provided the final spatial proportion matrices and generated plots in the `expected_results_Br6432/` directory of this repository!
+---
 ## Marker Prior Score (MPS) Details
 
 The MPS feature validates cluster marker genes against a canonical marker database using **F1 Score**:
