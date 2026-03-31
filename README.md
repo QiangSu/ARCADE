@@ -1,6 +1,6 @@
-# In ARCADE/README.md
+# ARCADE
 
-# 01a_ARCADE_ref_optimizer: scRNA-seq Bayesian Optimization and Analysis
+# 01a_ARCADE_ref_optimizer: python version
 
 **01a_ARCADE_ref_optimizer** is an integrated, two-stage computational pipeline for single-cell RNA sequencing (scRNA-seq) analysis. It automates the discovery of optimal processing parameters using Bayesian Optimization (Stage 1) and then applies these parameters to a comprehensive downstream analysis workflow (Stage 2). The pipeline also features an optional multi-level refinement process (Stage 3/4) to iteratively re-analyze and improve annotations for low-confidence cell clusters.
 
@@ -34,6 +34,10 @@ ARCADE/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
+├── marker_gene_reference/            # Canonical marker databases
+│   ├── combined_markers_summary.csv  # Ready-to-use combined database for MPS calculation
+│   ├── Cell_marker_All.csv           # Source database: CellMarker
+│   └── PanglaoDB_markers_27_Mar_2020.csv # Source database: PanglaoDB
 ├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer (Scanpy)
 ├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer (Seurat)
 └── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
@@ -91,7 +95,7 @@ pip install -r requirements.txt
 
 -   **scRNA-seq Data**: Ensure your Cell Ranger output (the folder containing barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz) is accessible. The pipeline also accepts .h5 or .h5ad files.
 -   **CellTypist Model**: Download a pre-trained CellTypist model (.pkl file). You can find available models on the official CellTypist models website.
--   **Marker Prior Database (Optional)**: A CSV file containing canonical marker genes for cell types. Expected columns: species, organ, cell_type, marker_genes (semicolon-separated), gene_count.
+-   **Marker Prior Database**: We provide a ready-to-use, integrated database located at `marker_gene_reference/combined_markers_summary.csv`. This file cleanly combines canonical markers from CellMarker and PanglaoDB. You can pass this directly to the `--marker_prior_db` argument! Expected columns if you use your own: species, organ, cell_type, marker_genes (semicolon-separated), gene_count.
 
 ### 6. Run the Pipeline
 
@@ -368,7 +372,22 @@ Where:
 - **Recall** = `|DEGs ∩ Canonical| / |Canonical|` — What fraction of canonical markers appear in top DEGs?
 
 ---
+## Provided Marker Gene Databases
 
+To make the ARCADE pipeline plug-and-play, we include a ready-to-use canonical marker database in the `marker_gene_reference/` directory:
+
+- **`combined_markers_summary.csv` (Recommended)**: A fully integrated, deduplicated, and formatted database ready for the `--marker_prior_db` argument. It combines the data from both underlying sources.
+- **`Cell_marker_All.csv`**: Raw source database containing comprehensive literature-curated human and mouse markers from CellMarker.
+- **`PanglaoDB_markers_27_Mar_2020.csv`**: Raw source database containing single-cell derived markers from PanglaoDB.
+
+*Usage Example:*
+```bash
+--marker_prior_db ./marker_gene_reference/combined_markers_summary.csv \
+--marker_prior_species Human \
+--marker_prior_organ Brain
+```
+
+---
 ## Cell Type Matching
 
 The pipeline uses multiple matching strategies:
@@ -396,7 +415,7 @@ Common abbreviations are automatically expanded:
 ---
 
 
-# 01b_ARCADE_ref_optimizer: R-Based Single-Cell Reference Optimization Pipeline
+# 01b_ARCADE_ref_optimizer: R version
 
 
 **01b_ARCADE_ref_optimizer.R** is an advanced, fully integrated R pipeline for preparing single-cell RNA-seq references. Leveraging Seurat and Harmony, it automates the discovery of optimal clustering parameters through Bayesian Optimization, performs batch integration, iteratively refines low-confidence cell populations, and conducts marker-based biological annotation to generate perfect inputs for spatial deconvolution (Stage 2).
@@ -412,19 +431,6 @@ Common abbreviations are automatically expanded:
 
 ---
 
-## Repository Structure
-```text
-ARCADE/
-├── .gitignore
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer (Scanpy)
-├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer (Seurat)
-└── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
-```
-
----
 
 ## Step-by-Step Workflow
 
@@ -592,20 +598,6 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 - **Comprehensive Visualizations**: Generates spatial proportion maps, marker gene overlays, cell state continuums, UMAP embeddings, and co-occurrence heatmaps.
 - **Marker Gene Analysis**: Computes marker gene rankings and differential expression with volcano plots.
 
----
-
-## Repository Structure
-```text
-ARCADE/
-├── .gitignore
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Reference optimization and clustering
-└── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
-```
-
----
 
 ## Step-by-Step Workflow
 
@@ -948,7 +940,6 @@ The --latent_combination argument controls how multi-dimensional latent states a
 | latent0 | First latent dimension only | Original behavior, single-dimension view |
 
 ---
-
 
 ## License
 
