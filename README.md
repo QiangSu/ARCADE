@@ -2,7 +2,7 @@
 <p align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</p>
 
 
-# <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="35" align="absmiddle"> 01a_ARCADE_ref_optimizer: python version 
+# <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="30" align="absmiddle"> 01a_ARCADE_ref_optimizer: python version 
 
 **01a_ARCADE_ref_optimizer** is an integrated, two-stage computational pipeline for single-cell RNA sequencing (scRNA-seq) analysis. It automates the discovery of optimal processing parameters using Bayesian Optimization (Stage 1) and then applies these parameters to a comprehensive downstream analysis workflow (Stage 2). The pipeline also features an optional multi-level refinement process (Stage 3/4) to iteratively re-analyze and improve annotations for low-confidence cell clusters.
 
@@ -415,9 +415,11 @@ Common abbreviations are automatically expanded:
 | `L5-6 Exc` | `layer 5-6 excitatory neuron` |
 | ... | |
 ---
+---
 
 
-# <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg" width="37" align="absmiddle"> 01b_ARCADE_ref_optimizer: R version
+
+# <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg" width="30" align="absmiddle"> 01b_ARCADE_ref_optimizer: R version
 
 
 **01b_ARCADE_ref_optimizer.R** is an advanced, fully integrated R pipeline for preparing single-cell RNA-seq references. Leveraging Seurat and Harmony, it automates the discovery of optimal clustering parameters through Bayesian Optimization, performs batch integration, iteratively refines low-confidence cell populations, and conducts marker-based biological annotation to generate perfect inputs for spatial deconvolution (Stage 2).
@@ -571,10 +573,12 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 | `--hvg_min_mean <float>` | Min mean for two-step HVG. | Activates pre-filtering if set with other HVG params. |
 | `--hvg_max_mean <float>` | Max mean for two-step HVG. | See above. |
 | `--hvg_min_disp <float>` | Min dispersion for two-step HVG. | See above. |
+---
+---
 
 
 
-# 02_ARCADE_spatial_decoupler: Spatial Transcriptomics Deconvolution and Cell State Inference
+# <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="30" align="absmiddle"> 02_ARCADE_spatial_decoupler
 
 **02_ARCADE_spatial_decoupler** is a comprehensive deep learning pipeline for spatial transcriptomics deconvolution. It estimates cell type proportions, infers continuous cell states, and generates publication-quality visualizations. The pipeline implements a two-stage variational autoencoder framework (scVAE + stVAE) that leverages single-cell RNA-seq references to deconvolve spatial transcriptomics data.
 
