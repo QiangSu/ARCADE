@@ -592,9 +592,12 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 | `--hvg_min_mean <float>` | Min mean for two-step HVG. | Activates pre-filtering if set with other HVG params. |
 | `--hvg_max_mean <float>` | Max mean for two-step HVG. | See above. |
 | `--hvg_min_disp <float>` | Min dispersion for two-step HVG. | See above. |
----
----
 
+<br><br><br>
+<hr>
+<h2 align="center"> 🚀 Spatial Deconvolution & Cell State Inference </h2>
+<hr>
+<br><br>
 
 
 # <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="30" align="absmiddle"> 02_ARCADE_spatial_decoupler
@@ -981,6 +984,7 @@ To ensure rigorous validation, ARCADE has been systematically benchmarked agains
 * **Single-Cell Mapping:** `CellTrek`, `Seurat`
 
 These scripts are standardized to accept the same inputs and output the same proportional matrices as ARCADE, allowing for direct, fair comparisons of speed, accuracy, and robustness.
+
 ---
 ## License
 
