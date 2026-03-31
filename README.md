@@ -660,6 +660,13 @@ pip install -r requirements.txt
 
 ### 6. Run the Pipeline
 
+> [!IMPORTANT]
+> **PERFECT PIPELINE SYNCHRONIZATION**
+> The deep learning spatial decoupler (Stage 2) is designed to seamlessly ingest the output from Stage 1 (`01a` or `01b`). You **must** use the cleanly formatted reference files generated in the `consistent_cells_subset/` output folder from the previous step:
+> * `--sc_counts` ➔ `.../sc_counts.csv`
+> * `--sc_labels` ➔ `.../sc_labels.csv`
+> * `--st_counts` ➔ `.../st_counts.csv`
+
 Basic Deconvolution (Full VAE Mode)
 
 ```bash
