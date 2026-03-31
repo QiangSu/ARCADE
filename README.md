@@ -599,8 +599,7 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 <hr>
 <br><br>
 
-
-# <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="30" align="absmiddle"> 02_ARCADE_spatial_decoupler
+# <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="22" align="absmiddle"> 02_ARCADE_spatial_decoupler
 
 **02_ARCADE_spatial_decoupler** is a comprehensive deep learning pipeline for spatial transcriptomics deconvolution. It estimates cell type proportions, infers continuous cell states, and generates publication-quality visualizations. The pipeline implements a two-stage variational autoencoder framework (scVAE + stVAE) that leverages single-cell RNA-seq references to deconvolve spatial transcriptomics data.
 
