@@ -5,7 +5,6 @@
 <hr>
 <h3 align="center"> 🚀 Python-based Bayesian Optimization </h3>
 <hr>
-<br><br>
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="30" align="absmiddle"> 01a_ARCADE_ref_optimizer: python version 
 
@@ -441,7 +440,7 @@ Common abbreviations are automatically expanded:
 
 <br><br><br>
 <hr>
-<h2 align="center"> 🚀 R-based Bayesian Optimization </h2>
+<h3 align="center"> 🚀 R-based Bayesian Optimization </h3>
 <hr>
 <br><br>
 
@@ -602,7 +601,7 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 
 <br><br><br>
 <hr>
-<h2 align="center"> 🚀 Spatial Deconvolution & Cell State Inference </h2>
+<h3 align="center"> 🚀 Spatial Deconvolution & Cell State Inference </h3>
 <hr>
 <br><br>
 
