@@ -979,7 +979,6 @@ To ensure rigorous validation, ARCADE has been systematically benchmarked agains
 * **Probabilistic / Deep Learning:** `Cell2location`, `DestVI`, `Stereoscope`, `Tangram`, `Starfysh`
 * **Statistical / Matrix Factorization:** `RCTD`, `SPOTlight`
 * **Single-Cell Mapping:** `CellTrek`, `Seurat` 
-
 These scripts are standardized to accept the same inputs and output the same proportional matrices as ARCADE, allowing for direct, fair comparisons of speed, accuracy, and robustness.
 ---
 ## License
