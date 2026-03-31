@@ -1,7 +1,6 @@
 <h1 align="center"> 🎯 ARCADE 🧠</h1>
 <p align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</p>
 
-<br><br><br>
 <hr>
 <h3 align="center"> 🚀 Python-based Bayesian Optimization </h3>
 <hr>
