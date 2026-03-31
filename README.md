@@ -3,7 +3,7 @@
 
 <br><br><br>
 <hr>
-<h2 align="center"> 🚀 Python-based Bayesian Optimization </h2>
+<h3 align="center"> 🚀 Python-based Bayesian Optimization </h3>
 <hr>
 <br><br>
 
