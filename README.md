@@ -37,11 +37,18 @@ ARCADE/
 ├── README.md
 ├── requirements.txt
 ├── marker_gene_reference/            # Canonical marker databases
-│   ├── combined_markers_summary.csv  # Ready-to-use combined database for MPS calculation
-│   ├── Cell_marker_All.csv           # Source database: CellMarker
-│   └── PanglaoDB_markers_27_Mar_2020.csv # Source database: PanglaoDB
-├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer (Scanpy)
-├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer (Seurat)
+├── benchmarking/                     # State-of-the-art (SOTA) comparison scripts
+│   ├── run_cell2location.py
+│   ├── run_CellTrek.R
+│   ├── run_destvi.py
+│   ├── run_Starfysh.py
+│   ├── run_RCTD.R
+│   ├── run_seurat.R
+│   ├── run_SPOTlight.R
+│   ├── run_stereoscope.py
+│   └── run_tangram.py
+├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer
+├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer
 └── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
 ```
 
@@ -965,7 +972,16 @@ The --latent_combination argument controls how multi-dimensional latent states a
 | latent0 | First latent dimension only | Original behavior, single-dimension view |
 
 ---
+## 📊 Benchmarking & Comparisons
 
+To ensure rigorous validation, ARCADE has been systematically benchmarked against leading spatial deconvolution and mapping tools. We provide fully reproducible implementation scripts for these state-of-the-art (SOTA) methods in the `benchmarking/` directory:
+
+* **Probabilistic / Deep Learning:** `Cell2location`, `DestVI`, `Stereoscope`, `Tangram`, `Starfysh`
+* **Statistical / Matrix Factorization:** `RCTD`, `SPOTlight`
+* **Single-Cell Mapping:** `CellTrek`, `Seurat` 
+
+These scripts are standardized to accept the same inputs and output the same proportional matrices as ARCADE, allowing for direct, fair comparisons of speed, accuracy, and robustness.
+---
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
