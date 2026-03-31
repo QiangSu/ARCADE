@@ -2,8 +2,17 @@
 
 # 01a_ARCADE_ref_optimizer: scRNA-seq Bayesian Optimization and Analysis
 
-
 **01a_ARCADE_ref_optimizer** is an integrated, two-stage computational pipeline for single-cell RNA sequencing (scRNA-seq) analysis. It automates the discovery of optimal processing parameters using Bayesian Optimization (Stage 1) and then applies these parameters to a comprehensive downstream analysis workflow (Stage 2). The pipeline also features an optional multi-level refinement process (Stage 3/4) to iteratively re-analyze and improve annotations for low-confidence cell clusters.
+
+---
+
+## ARCADE Workflow Overview
+
+<p align="center">
+  <img src="image/Fig1-up.png" alt="ARCADE Workflow Top" width="800"><br>
+</p>
+
+---
 
 ## Key Features
 
@@ -25,7 +34,8 @@ ARCADE/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Reference optimization and clustering
+├── 01a_ARCADE_ref_optimizer.py       # Stage 1: Python-based reference optimizer (Scanpy)
+├── 01b_ARCADE_ref_optimizer.R        # Stage 1: R-based reference optimizer (Seurat)
 └── 02_ARCADE_spatial_decoupler.py    # Stage 2: Spatial deconvolution and cell state inference
 ```
 
@@ -85,95 +95,72 @@ pip install -r requirements.txt
 
 ### 6. Run the Pipeline
 
-Here is an example command for a single-sample analysis:
+Here is an example command for a standard analysis:
 
 ```bash
 python 01a_ARCADE_ref_optimizer.py \
-  --data_dir /path/to/your/cellranger_output/ \
-  --output_dir ./my_analysis_output/ \
-  --output_dir ./my_analysis_output/ \
-  --model_path ./reference/Healthy_COVID19_PBMC.pkl \
-  --output_prefix sample \
+  --data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix \
+  --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1 \
+  --model_path /home/data/.celltypist/data/models/Adult_Human_PrefrontalCortex.pkl \
+  --output_prefix Br \
+  --final_run_prefix Br \
   --seed 42 \
   --n_calls 50 \
   --target all \
   --model_type biological \
+  --deg_ranking_method composite \
+  --mps_bonus_weight 0.0 \
+  --marker_prior_db /home/data/references/combined_markers_summary.csv \
+  --marker_prior_species Human \
+  --marker_prior_organ Brain \
+  --n_degs_for_mps 200 \
+  --mps_similarity_threshold 0.7 \
+  --mps_verbose_matching \
+  --integration_method harmony \
+  --batch_key sample \
   --cas_aggregation_method leiden \
+  --refinement_depth 0 \
+  --min_cells_per_type 10 \
   --hvg_min_mean 0.0125 \
   --hvg_max_mean 3.0 \
-  --hvg_min_disp 0.3 
+  --hvg_min_disp 0.3 \
+  --fig_dpi 300
 ```
 
 Single-sample refinement analysis
 
 ```bash
 python 01a_ARCADE_ref_optimizer.py \
-  --data_dir /path/to/your/cellranger_output/ \
-  --output_dir ./my_analysis_output/ \
-  --model_path ./reference/Healthy_COVID19_PBMC.pkl \
-  --output_prefix sample \
+  --data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix \
+  --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1 \
+  --model_path /home/data/.celltypist/data/models/Adult_Human_PrefrontalCortex.pkl \
+  --output_prefix Br \
+  --final_run_prefix Br \
   --seed 42 \
   --n_calls 50 \
   --target all \
   --model_type biological \
-  --cas_aggregation_method leiden \
-  --hvg_min_mean 0.0125 \
-  --hvg_max_mean 3.0 \
-  --hvg_min_disp 0.3 \
-  --cas_refine_threshold 50 \
-  --min_cells_refinement 50 \
-  --refinement_depth 3
-```
-
-Single-sample analysis with Marker Prior Score (MPS)
-
-```bash
-python 01a_ARCADE_ref_optimizer.py \
-  --data_dir /path/to/your/cellranger_output/ \
-  --output_dir ./my_analysis_output/ \
-  --model_path ./reference/Healthy_COVID19_PBMC.pkl \
-  --output_prefix sample \
-  --seed 42 \
-  --n_calls 50 \
-  --target all \
-  --model_type biological \
-  --marker_prior_db ./markers/combined_markers_summary.csv \
+  --deg_ranking_method composite \
+  --mps_bonus_weight 0.0 \
+  --marker_prior_db /home/data/references/combined_markers_summary.csv \
   --marker_prior_species Human \
-  --mps_bonus_weight 0.2 \
-  --n_degs_for_mps 50
-```
-
-Analysis with Spatial Transcriptomics integration (for deconvolution):
-
-```bash
-python 01a_ARCADE_ref_optimizer.py \
-  --data_dir /path/to/your/cellranger_output/ \
-  --output_dir ./my_analysis_output/ \
-  --model_path ./reference/Healthy_COVID19_PBMC.pkl \
-  --output_prefix sample \
-  --st_data_dir /path/to/spatial_data/ \
-  --min_cells_per_type 50
-```
-
-Multiple-sample refinement analysis:
-
-```bash
-python 01a_ARCADE_ref_optimizer.py \
-  --multi_sample ./WT_CellRanger/ ./treated_CellRanger/ \
-  --output_dir ./my_analysis_output/ \
-  --model_path ./reference/Mouse_Whole_Brain.pkl \
-  --output_prefix WTTR \
-  --seed 42 \
-  --n_calls 50 \
-  --target all \
-  --model_type biological \
+  --marker_prior_organ Brain \
+  --n_degs_for_mps 200 \
+  --mps_similarity_threshold 0.7 \
+  --mps_verbose_matching \
+  --integration_method harmony \
+  --batch_key sample \
   --cas_aggregation_method leiden \
+  --cas_refine_threshold 50 \
+  --refinement_depth 3 \
+  --min_cells_refinement 100 \
+  --min_cells_per_type 10 \
   --hvg_min_mean 0.0125 \
   --hvg_max_mean 3.0 \
   --hvg_min_disp 0.3 \
-  --cas_refine_threshold 50 \
-  --min_cells_refinement 50 \
-  --refinement_depth 3
+  --fig_dpi 300
 ```
 ---
 
@@ -477,36 +464,66 @@ Basic Optimization
 
 ```bash
 Rscript 01b_ARCADE_ref_optimizer.R \
-  --data_dir ./data/raw_counts/ \
-  --reference_path ./data/reference_seurat.rds \
-  --output_dir ./scRNA_results/ \
-  --n_calls 50
-```
-
-Optimization with Harmony Batch Integration
-
-```bash
-Rscript 01b_ARCADE_ref_optimizer.R \
-  --data_dir ./data/raw_counts/ \
-  --reference_path ./data/reference_seurat.rds \
-  --output_dir ./scRNA_results/ \
-  --batch_col orig.ident \
-  --harmony_max_iter 20 \
-  --n_calls 50
-```
-
-Full Pipeline with Biological Marker Validation (MPS)
-
-```bash
-Rscript 01b_ARCADE_ref_optimizer.R \
-  --data_dir ./data/raw_counts/ \
-  --reference_path ./data/reference_seurat.rds \
-  --marker_db_path ./data/marker_database.csv \
+  --data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix \
+  --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Seurate_BO_leiden_noMPS1_git \
+  --reference_path /home/data/references/brain/human_mtg_reference.rds \
+  --reference_labels_col subclass_label \
+  --reference_assay RNA \
+  --output_prefix DLPFC \
+  --final_run_prefix DLPFC \
+  --species human \
+  --seed 42 \
+  --n_calls 30 \
+  --n_init_points 10 \
   --target balanced \
-  --model_type mps_integrated \
-  --output_dir ./scRNA_results/ \
-  --cas_refine_threshold 70.0
+  --model_type standard \
+  --deg_ranking_method composite \
+  --marker_db_path /home/data/references/combined_markers_summary.csv \
+  --marker_prior_species human \
+  --marker_prior_organ Brain \
+  --mps_n_top_genes 200 \
+  --mps_min_pct 0.1 \
+  --mps_logfc_threshold 0.25 \
+  --cas_aggregation_method leiden \
+  --refinement_depth 0 \
+  --min_cells_per_type 10 \
+  --fig_dpi 300
 ```
+
+Optimization with Refinement
+
+```bash
+Rscript 01b_ARCADE_ref_optimizer.R \
+  --data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix \
+  --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Seurate_BO_leiden_noMPS1_git \
+  --reference_path /home/data/references/brain/human_mtg_reference.rds \
+  --reference_labels_col subclass_label \
+  --reference_assay RNA \
+  --output_prefix DLPFC \
+  --final_run_prefix DLPFC \
+  --species human \
+  --seed 42 \
+  --n_calls 30 \
+  --n_init_points 10 \
+  --target balanced \
+  --model_type standard \
+  --deg_ranking_method composite \
+  --marker_db_path /home/data/references/combined_markers_summary.csv \
+  --marker_prior_species human \
+  --marker_prior_organ Brain \
+  --mps_n_top_genes 200 \
+  --mps_min_pct 0.1 \
+  --mps_logfc_threshold 0.25 \
+  --cas_aggregation_method leiden \
+  --cas_refine_threshold 50 \
+  --refinement_depth 3 \
+  --min_cells_refinement 50 \
+  --min_cells_per_type 10 \
+  --fig_dpi 300
+```
+
 ---
 
 ## Command-Line Arguments Explained
@@ -551,8 +568,17 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 
 # 02_ARCADE_spatial_decoupler: Spatial Transcriptomics Deconvolution and Cell State Inference
 
-
 **02_ARCADE_spatial_decoupler** is a comprehensive deep learning pipeline for spatial transcriptomics deconvolution. It estimates cell type proportions, infers continuous cell states, and generates publication-quality visualizations. The pipeline implements a two-stage variational autoencoder framework (scVAE + stVAE) that leverages single-cell RNA-seq references to deconvolve spatial transcriptomics data.
+
+---
+
+## ARCADE Workflow Overview
+
+<p align="center">
+  <img src="image/Fig1-bottom.png" alt="ARCADE Workflow Bottom" width="800">
+</p>
+
+---
 
 ## Key Features
 
@@ -640,72 +666,23 @@ Basic Deconvolution (Full VAE Mode)
 
 ```bash
 python 02_ARCADE_spatial_decoupler.py \
-  --sc_counts /path/to/sc_counts.csv \
-  --sc_labels /path/to/sc_labels.csv \
-  --st_counts /path/to/st_counts.csv \
-  --st_coords /path/to/tissue_positions.csv \
-  --output_dir ./spatial_results/ \
-  --sc_epochs 200 \
-  --st_epochs 2000 \
-  --latent 10 \
-  --batch_size 128 \
-  --gpu
-```
-
-Two-Stage Training with Warm Start
-
-```bash
-python 02_ARCADE_spatial_decoupler.py \
-  --sc_counts /path/to/sc_counts.csv \
-  --sc_labels /path/to/sc_labels.csv \
-  --st_counts /path/to/st_counts.csv \
-  --st_coords /path/to/tissue_positions.csv \
-  --output_dir ./spatial_results/ \
+  --sc_counts /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1/consistent_cells_subset/sc_counts.csv \
+  --sc_labels /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1/consistent_cells_subset/sc_labels.csv \
+  --st_counts /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1/consistent_cells_subset/st_counts.csv \
+  --st_coords /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA/tissue_positions_list.csv \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1/consistent_cells_subset/Br6432_ant_BO_ARCADE_result_git \
   --two_stage \
-  --freeze_proportions \
-  --sc_epochs 200 \
-  --st_epochs 2000
-```
-
-Proportion-Only Mode (Faster, No Cell States)
-
-```bash
-python 02_ARCADE_spatial_decoupler.py \
-  --sc_counts /path/to/sc_counts.csv \
-  --sc_labels /path/to/sc_labels.csv \
-  --st_counts /path/to/st_counts.csv \
-  --st_coords /path/to/tissue_positions.csv \
-  --output_dir ./spatial_results/ \
-  --mode proportion_only \
-  --proportion_method simplex_ae \
-  --st_epochs 1000
-```
-
-With Pseudo-Spot Consistency Training
-
-```bash
-python 02_ARCADE_spatial_decoupler.py \
-  --sc_counts /path/to/sc_counts.csv \
-  --sc_labels /path/to/sc_labels.csv \
-  --st_counts /path/to/st_counts.csv \
-  --st_coords /path/to/tissue_positions.csv \
-  --output_dir ./spatial_results/ \
-  --use_pseudo_spots \
-  --n_pseudo_spots 1000 \
-  --pseudo_weight 1.0 \
-  --pseudo_warmup_epochs 50
-```
-
-Including Unknown Cell Type Category
-
-```bash
-python 02_ARCADE_spatial_decoupler.py \
-  --sc_counts /path/to/sc_counts.csv \
-  --sc_labels /path/to/sc_labels.csv \
-  --st_counts /path/to/st_counts.csv \
-  --output_dir ./spatial_results/ \
-  --include_unknown \
-  --temperature 0.5
+  --soft_constraint \
+  --constraint_strength 0.1 \
+  --decorrelate_gamma 0.01 \
+  --sc_epochs 1000 \
+  --st_epochs 15000 \
+  --temperature 1.0 \
+  --reg_entropy 0.1 \
+  --reg_sparsity 0.1 \
+  --presence_threshold 0.0 \
+  --hex_orientation 0 \
+  --include_unknown
 ```
 ---
 
