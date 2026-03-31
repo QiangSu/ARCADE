@@ -351,6 +351,9 @@ slurm-*.out
 test_data/
 tests/fixtures/
 sample_data/
+# Local example data (uploaded to GitHub Releases instead)
+example_data_Br6432/
+example_data_Br6432.tar.gz
 
 # =============================================================================
 # Credentials and Secrets (IMPORTANT - Never commit these!)
