@@ -437,11 +437,9 @@ Common abbreviations are automatically expanded:
 | `L5-6 Exc` | `layer 5-6 excitatory neuron` |
 | ... | |
 
-<br><br><br>
 <hr>
 <h3 align="center"> 🚀 R-based Bayesian Optimization </h3>
 <hr>
-<br><br>
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg" width="30" align="absmiddle"> 01b_ARCADE_ref_optimizer: R version
 
@@ -598,11 +596,9 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 | `--hvg_max_mean <float>` | Max mean for two-step HVG. | See above. |
 | `--hvg_min_disp <float>` | Min dispersion for two-step HVG. | See above. |
 
-<br><br><br>
 <hr>
 <h3 align="center"> 🚀 Spatial Deconvolution & Cell State Inference </h3>
 <hr>
-<br><br>
 
 ### <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width="22" align="absmiddle"> 02_ARCADE_spatial_decoupler
 
