@@ -1,0 +1,120 @@
+======================================================================
+GENE ANALYSIS SUMMARY
+======================================================================
+
+MARKER GENE RANKINGS
+----------------------------------------
+Output directory: /home/data/qs/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA/Br6432_ant_BO_ARCAE_result/marker_gene_rankings
+
+
+Astro GFAP AQP1:
+  Total genes ranked: 2165
+  Top 5 markers: OBI1-AS1, HPSE2, TNC, TRPM3, ALDH1A1
+
+Endo CLDN5 IL1R1:
+  Total genes ranked: 2165
+  Top 5 markers: CNTN4, CDH12, MT-ND4, MT-ND3, MT-ATP6
+
+Micro P2RY12 APBB1IP:
+  Total genes ranked: 2165
+  Top 5 markers: PLXDC2, DLEU1, LNCAROD, LRMDA, LINC02232
+
+OPC PDGFRA PCDH15:
+  Total genes ranked: 2165
+  Top 5 markers: LHFPL3, NXPH1, TNR, VCAN, SOX6
+
+Oligo MOG GSN:
+  Total genes ranked: 2165
+  Top 5 markers: ST18, CTNNA3, NKAIN2, QKI, MAN2A1
+
+Oligo MOG OPALIN:
+  Total genes ranked: 2165
+  Top 5 markers: SLC24A2, CTNNA3, PPP2R2B, QKI, NCKAP5
+
+PC P2RY14 GRM8:
+  Total genes ranked: 2165
+  Top 5 markers: DLC1, ATP1A2, SLC38A11, EBF1, LAMA2
+
+T SKAP1 CD247:
+  Total genes ranked: 2165
+  Top 5 markers: SKAP1, CCL4, IL7R, CD69, SYTL3
+
+
+DIFFERENTIAL EXPRESSION ANALYSIS
+----------------------------------------
+Output directory: /home/data/qs/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA/Br6432_ant_BO_ARCAE_result/differential_expression
+Method: Wilcoxon rank-sum test (Mann-Whitney U)
+Multiple testing correction: Benjamini-Hochberg FDR
+
+
+Astro GFAP AQP1 vs Rest:
+  Cells in group: 74
+  Cells in rest: 1962
+  Significant genes (padj < 0.05): 736
+    - Upregulated: 396
+    - Downregulated: 340
+  Top 5 upregulated: HPSE2, OBI1-AS1, TNC, SLC14A1, LINC01088
+  Top 5 downregulated: TTLL7, PCDH15, ELMO1, GRID2, SLC24A2
+
+Endo CLDN5 IL1R1 vs Rest:
+  Cells in group: 1178
+  Cells in rest: 858
+  Significant genes (padj < 0.05): 818
+    - Upregulated: 263
+    - Downregulated: 555
+  Top 5 upregulated: CDH12, CNTN4, STXBP5-AS1, CNTN5, PRKG1
+  Top 5 downregulated: DOCK1, TCF4, ZEB2, CDH20, NCKAP5
+
+Micro P2RY12 APBB1IP vs Rest:
+  Cells in group: 23
+  Cells in rest: 2013
+  Significant genes (padj < 0.05): 547
+    - Upregulated: 351
+    - Downregulated: 196
+  Top 5 upregulated: DOCK8, LINC02232, LNCAROD, C3, APBB1IP
+  Top 5 downregulated: TTLL7, PCDH15, NCAM2, SLC24A2, PPP2R2B
+
+OPC PDGFRA PCDH15 vs Rest:
+  Cells in group: 394
+  Cells in rest: 1642
+  Significant genes (padj < 0.05): 817
+    - Upregulated: 499
+    - Downregulated: 318
+  Top 5 upregulated: LHFPL3, VCAN, SOX6, NXPH1, DCC
+  Top 5 downregulated: PRKG1, SLC24A2, CDH12, MAP7, NKAIN2
+
+Oligo MOG GSN vs Rest:
+  Cells in group: 77
+  Cells in rest: 1959
+  Significant genes (padj < 0.05): 772
+    - Upregulated: 525
+    - Downregulated: 247
+  Top 5 upregulated: SLC5A11, CDK18, LDB3, ST18, MOBP
+  Top 5 downregulated: PLXDC2, CNTN4, PTPRZ1, PITPNC1, PCDH15
+
+Oligo MOG OPALIN vs Rest:
+  Cells in group: 259
+  Cells in rest: 1777
+  Significant genes (padj < 0.05): 763
+    - Upregulated: 385
+    - Downregulated: 378
+  Top 5 upregulated: ST18, LINC01608, PLP1, TMEM144, MOBP
+  Top 5 downregulated: RBFOX1, CNTN4, PTPRZ1, PITPNC1, PCDH15
+
+PC P2RY14 GRM8 vs Rest:
+  Cells in group: 15
+  Cells in rest: 2021
+  Significant genes (padj < 0.05): 417
+    - Upregulated: 327
+    - Downregulated: 90
+  Top 5 upregulated: SLC38A11, LINC02147, SLC12A7, GGT5, ITIH5
+  Top 5 downregulated: ELMO1, PCDH15, NCAM2, SLC24A2, PPP2R2B
+
+T SKAP1 CD247 vs Rest:
+  Cells in group: 16
+  Cells in rest: 2020
+  Significant genes (padj < 0.05): 462
+    - Upregulated: 307
+    - Downregulated: 155
+  Top 5 upregulated: SKAP1, IKZF3, PTPRC, CXCR4, ITK
+  Top 5 downregulated: PCDH15, QKI, GRID2, SLC24A2, NCAM2
