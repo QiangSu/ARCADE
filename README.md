@@ -86,16 +86,6 @@ conda activate ARCADE_env
 
 ```
 
-```bash
-# Create a virtual environment named 'venv'
-python3 -m venv venv
-
-# Activate the environment
-source venv/bin/activate
-
-# To deactivate later, simply run: deactivate
-```
-
 ### 4. Install Dependencies
 
 The `requirements.txt` file contains the exact library versions for perfect reproducibility.
@@ -654,16 +644,6 @@ conda create -n ARCADE_env python=3.9
 # Activate the environment
 conda activate ARCADE_env
 
-```
-
-```bash
-# Create a virtual environment named 'venv'
-python3 -m venv venv
-
-# Activate the environment
-source venv/bin/activate
-
-# To deactivate later, simply run: deactivate
 ```
 
 ### 4. Install Dependencies
