@@ -11,7 +11,7 @@
 
 ---
 
-## ARCADE Workflow Overview
+## ARCADE Optimization Workflow Overview
 
 <p align="center">
   <img src="image/Fig1-up.png" alt="ARCADE Workflow Top" width="800"><br>
@@ -597,7 +597,7 @@ Rscript 01b_ARCADE_ref_optimizer.R \
 
 ---
 
-## ARCADE Workflow Overview
+## ARCADE Inference Workflow Overview
 
 <p align="center">
   <img src="image/Fig1-bottom.png" alt="ARCADE Workflow Bottom" width="800">
