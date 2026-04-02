@@ -773,43 +773,42 @@ python 02_ARCADE_spatial_decoupler.py \
 
 ## Mathematical Framework
 
-scVAE (Stage 1: Reference Training)
+### scVAE (Stage 1: Reference Training)
 The scVAE learns a conditional generative model for single-cell expression:
 
-```math
-\gamma_n \sim \mathcal{N}(0, I)
-x_{ng} | \gamma_n, c_n \sim \text{NB}(l_n \times \rho_g(\gamma_n, c_n), \theta_g)
-```
-Where:
-- **$\gamma_n$**: Latent cell state for cell $n$
-- **$c_n$**: Cell type label for cell $n$
-- **$l_n$**: Library size (total counts) for cell $n$
-- **$\rho_g$**: Decoder mapping latent state + cell type to normalized expression
-- **$\theta_g$**: Gene-specific dispersion parameter
+$$ \gamma_n \sim \mathcal{N}(0, I) $$
 
-stVAE (Stage 2: Spatial Deconvolution)
+$$ x_{ng} | \gamma_n, c_n \sim \text{NB}\Big(l_n \rho_g(\gamma_n, c_n), \theta_g\Big) $$
+
+Where:
+- $\gamma_n$: Latent cell state for cell $n$
+- $c_n$: Cell type label for cell $n$
+- $l_n$: Library size (total counts) for cell $n$
+- $\rho_g$: Decoder mapping latent state + cell type to normalized expression
+- $\theta_g$: Gene-specific dispersion parameter
+
+### stVAE (Stage 2: Spatial Deconvolution)
 The stVAE decomposes spatial spots as mixtures of cell types:
-```math
-x_{sg} | \pi_s, \{\gamma_{sc}\} \sim \text{NB}(l_s \times \alpha_g \times \sum_c \pi_{sc} \times \rho_g(\gamma_{sc}, c), \theta_g)
-\gamma_{sc} \sim \mathcal{N}(\mu_c, \Sigma_c) \quad \text{[empirical prior from scVAE]}
-```
+
+$$ x_{sg} | \pi_s, \{\gamma_{sc}\} \sim \text{NB}\Big(l_s \alpha_g \sum_c \pi_{sc} \rho_g(\gamma_{sc}, c), \theta_g\Big) $$
+
+$$ \gamma_{sc} \sim \mathcal{N}(\mu_c, \Sigma_c) \quad \text{[empirical prior from scVAE]} $$
 
 Where:
-- **$\pi_s$**: Cell type proportions at spot $s$
-- **$\gamma_{sc}$**: Cell-type-specific state at spot $s$ for type $c$
-- **$\alpha_g$**: Gene-specific correction factor for platform differences
-- **$\mu_c, \Sigma_c$**: Empirical prior learned from scRNA-seq latent states
+- $\pi_s$: Cell type proportions at spot $s$
+- $\gamma_{sc}$: Cell-type-specific state at spot $s$ for type $c$
+- $\alpha_g$: Gene-specific correction factor for platform differences
+- $\mu_c, \Sigma_c$: Empirical prior learned from scRNA-seq latent states
 
-Loss Function
-```math
-\mathcal{L} = \text{NLL} + \lambda_\gamma \text{KL}_\gamma + \lambda_\alpha \mathcal{L}_\alpha + \lambda_\pi \mathcal{L}_\pi
-```
+### Loss Function
+
+$$ \mathcal{L} = \text{NLL} + \lambda_\gamma \text{KL}_\gamma + \lambda_\alpha \mathcal{L}_\alpha + \lambda_\pi \mathcal{L}_\pi $$
+
 Where:
-- **$\text{NLL}$**: Negative Binomial log-likelihood
-- **$\text{KL}_\gamma$**: KL divergence for $\gamma$ against the empirical prior
-- **$\mathcal{L}_\alpha$**: Regularization on gene correction factors
-- **$\mathcal{L}_\pi$**: Entropy/sparsity regularization on proportions
-
+- $\text{NLL}$: Negative Binomial log-likelihood
+- $\text{KL}_\gamma$: KL divergence for $\gamma$ against the empirical prior
+- $\mathcal{L}_\alpha$: Regularization on gene correction factors
+- $\mathcal{L}_\pi$: Entropy/sparsity regularization on proportions
 
 
 ## Output Directory Structure
