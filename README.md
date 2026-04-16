@@ -1,4 +1,7 @@
-<h1 align="center"> 🎯 ARCADE 🧠</h1>
+<h1 align="center">
+  <span style="font-size: 2.2em;">🕹️</span><br>
+  🎯 ARCADE 🧠
+</h1>
 <p align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</p>
 
 <hr>
