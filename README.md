@@ -171,9 +171,11 @@ python 01a_ARCADE_ref_optimizer.py \
 ```
 
 Multi-sample refinement analysis
+
 When analyzing multiple samples (e.g., from different cell lines, distinct spatial regions like Br6522_mid and Br6522_post, or separate sequencing batches), we recommend simply combining the scRNA-seq datasets prior to running ARCADE. 
 
-1. Combine Multiple Matrices (R Script)
+Combine Multiple Matrices (R Script)
+
 While not strictly required if your data is already aggregated, you can easily merge multiple Cell Ranger output directories (filtered_feature_bc_matrix) into a single integrated matrix using the following R script. This script automatically finds common genes and appends sample-specific suffixes to the cell barcodes.
 
 ```bash
@@ -237,6 +239,7 @@ cat("Successfully combined", length(mat_list), "matrices and saved to:\n", out_d
 
 Example of successfully merged barcodes showing the appended batch suffix:
 
+```text
 AAACCCAAGACTCTTG-1_Br6522mid
 AAACCCAAGTATGGAT-1_Br6522mid
 AAACCCACACGATAGG-1_Br6522mid
@@ -244,8 +247,10 @@ AAACCCACACGATAGG-1_Br6522mid
 AAACCCAAGACTCTTG-1_Br6522post
 AAACCCAAGTATGGAT-1_Br6522post
 AAACCCACACGATAGG-1_Br6522post
+```
 
-2. Run the Refinement Optimizer
+Run the Refinement Optimizer
+
 Once your matrices are combined, run the Python pipeline. The --batch_key sample argument combined with --integration_method harmony will automatically detect these sample suffixes and handle batch integration seamlessly.
 
 ```bash
