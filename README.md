@@ -141,10 +141,121 @@ Single-sample refinement analysis
 python 01a_ARCADE_ref_optimizer.py \
   --data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix \
   --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
-  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git1 \
+  --output_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/scRNA/combined_fastq/Br6432_ant_output/outs/filtered_feature_bc_matrix/Celltypist_BO_leiden_noMPS_git \
   --model_path /home/data/.celltypist/data/models/Adult_Human_PrefrontalCortex.pkl \
   --output_prefix Br \
   --final_run_prefix Br \
+  --seed 42 \
+  --n_calls 50 \
+  --target all \
+  --model_type biological \
+  --deg_ranking_method composite \
+  --mps_bonus_weight 0.0 \
+  --marker_prior_db /home/data/references/combined_markers_summary.csv \
+  --marker_prior_species Human \
+  --marker_prior_organ Brain \
+  --n_degs_for_mps 200 \
+  --mps_similarity_threshold 0.7 \
+  --mps_verbose_matching \
+  --integration_method harmony \
+  --batch_key sample \
+  --cas_aggregation_method leiden \
+  --cas_refine_threshold 50 \
+  --refinement_depth 3 \
+  --min_cells_refinement 100 \
+  --min_cells_per_type 10 \
+  --hvg_min_mean 0.0125 \
+  --hvg_max_mean 3.0 \
+  --hvg_min_disp 0.3 \
+  --fig_dpi 300
+```
+
+Multi-sample refinement analysis
+When analyzing multiple samples (e.g., from different cell lines, distinct spatial regions like Br6522_mid and Br6522_post, or separate sequencing batches), we recommend simply combining the scRNA-seq datasets prior to running ARCADE. 
+
+1. Combine Multiple Matrices (R Script)
+While not strictly required if your data is already aggregated, you can easily merge multiple Cell Ranger output directories (filtered_feature_bc_matrix) into a single integrated matrix using the following R script. This script automatically finds common genes and appends sample-specific suffixes to the cell barcodes.
+
+```bash
+# 1. Load required libraries
+library(Seurat)
+library(Matrix)
+library(DropletUtils)
+
+# 2. Define the input directories for your samples
+dir_Br6522mid <- "/home/data/ST_scRNA-data/DLPFC_data/raw_Br6522_snRNA-seq_data/Br6522_mid_output/outs/filtered_feature_bc_matrix"
+dir_Br6522post <- "/home/data/ST_scRNA-data/DLPFC_data/raw_Br6522_snRNA-seq_data/Br6522_post_output/outs/filtered_feature_bc_matrix"
+
+# If you get more datasets later, just add them to this list!
+data_info <- c(
+  "Br6522mid"  = dir_Br6522mid,
+  "Br6522post" = dir_Br6522post
+)
+
+# Define the output directory for the combined matrix
+out_dir <- "/home/data/ST_scRNA-data/DLPFC_data/raw_Br6522_snRNA-seq_data/combined_MultiSample_matrix"
+
+# 3. Read all matrices into a list
+cat("Reading matrices...\n")
+mat_list <- lapply(data_info, function(path) {
+  Read10X(data.dir = path)
+})
+
+# 4. Add suffixes to barcodes automatically using the list names
+cat("Adding suffixes to barcodes...\n")
+for (sample_name in names(mat_list)) {
+  colnames(mat_list[[sample_name]]) <- paste0(colnames(mat_list[[sample_name]]), "_", sample_name)
+}
+
+# 5. Find common genes across ALL matrices
+cat("Aligning genes across all samples...\n")
+# Extract rownames (genes) from every matrix
+gene_list <- lapply(mat_list, rownames)
+# 'Reduce' applies 'intersect' across the entire list of gene sets
+common_genes <- Reduce(intersect, gene_list)
+
+cat(sprintf("Found %d common genes across %d samples.\n", length(common_genes), length(mat_list)))
+
+# 6. Subset all matrices to the common gene set
+mat_list_aligned <- lapply(mat_list, function(m) {
+  m[common_genes, ]
+})
+
+# 7. Merge all matrices into one
+cat("Merging all matrices...\n")
+# 'do.call(cbind, ...)' is the efficient way to combine a list of many matrices
+combined_mat <- do.call(cbind, mat_list_aligned)
+
+# 8. Save the results
+if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+
+cat("Writing to disk...\n")
+write10xCounts(path = out_dir, x = combined_mat, version = "3", overwrite = TRUE)
+
+cat("Successfully combined", length(mat_list), "matrices and saved to:\n", out_dir, "\n")
+```
+
+Example of successfully merged barcodes showing the appended batch suffix:
+
+AAACCCAAGACTCTTG-1_Br6522mid
+AAACCCAAGTATGGAT-1_Br6522mid
+AAACCCACACGATAGG-1_Br6522mid
+...
+AAACCCAAGACTCTTG-1_Br6522post
+AAACCCAAGTATGGAT-1_Br6522post
+AAACCCACACGATAGG-1_Br6522post
+
+2. Run the Refinement Optimizer
+Once your matrices are combined, run the Python pipeline. The --batch_key sample argument combined with --integration_method harmony will automatically detect these sample suffixes and handle batch integration seamlessly.
+
+```bash
+python 01a_ARCADE_ref_optimizer.py \
+  --data_dir /home/data/qs/ST_scRNA-data/DLPFC_data/raw_Br6522_snRNA-seq_data/combined_MultiSample_matrix \
+  --st_data_dir /home/data/ST_scRNA-data/DLPFC_data/Br6432_Ant_IF/stRNA \
+  --output_dir /home/data/qs/ST_scRNA-data/DLPFC_data/raw_Br6522_snRNA-seq_data/combined_MultiSample_matrix/Celltypist_BO_leiden_noMPS_git1 \
+  --model_path /home/data/.celltypist/data/models/Adult_Human_PrefrontalCortex.pkl \
+  --output_prefix Br_combined \
+  --final_run_prefix Br_combined \
   --seed 42 \
   --n_calls 50 \
   --target all \
