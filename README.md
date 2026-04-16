@@ -2,7 +2,7 @@
   <span style="font-size: 2.2em;">🕹️</span><br>
   🎯 ARCADE 🧠
 </h1>
-<p align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</p>
+<h3 align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</h3>
 
 <hr>
 <h3 align="center"> 🚀 Python-based Bayesian Optimization </h3>
