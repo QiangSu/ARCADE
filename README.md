@@ -1,5 +1,5 @@
 <h1 align="center">
-  <span style="font-size: 2.2em;">🕹️</span><br>
+  <span style="font-size: 2.2em;">🕹️🕹️🕹️🕹️🕹️</span><br>
   🎯 ARCADE 🧠
 </h1>
 <h3 align="center"><b>A</b>uto-optimized <b>R</b>eference <b>C</b>onsensus <b>A</b>nd <b>D</b>ecoupling <b>E</b>ngine</h3>
